@@ -33,9 +33,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
-		panic(err)
-	}
+	dockerCli.StartContainer(resp.ID)
 
 	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
 	select {

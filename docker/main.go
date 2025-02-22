@@ -92,3 +92,7 @@ func (d *Docker) KillContainer(containerID string) error {
 func (d *Docker) PauseContainer(containerID string) error {
 	return d.cli.ContainerPause(context.Background(), containerID)
 }
+
+func (d *Docker) UnpauseContainer(containerID string) error {
+	return d.cli.ContainerUnpause(context.Background(), containerID)
+}
