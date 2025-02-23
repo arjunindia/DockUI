@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"os"
 
 	"github.com/docker/docker/api/types/container"
@@ -9,6 +10,7 @@ import (
 	"github.com/docker/docker/pkg/stdcopy"
 
 	"DockUI/docker"
+	"DockUI/frontend"
 )
 
 func main() {
@@ -22,7 +24,10 @@ func main() {
 	dockerCli := docker.NewDocker()
 	defer dockerCli.Close()
 	dockerCli.PullImage("alpine")
-	dockerCli.ListImages()
+	_, err = dockerCli.ListImages()
+	if err != nil {
+		panic(err)
+	}
 	dockerCli.ListContainers()
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
@@ -42,6 +47,7 @@ func main() {
 			panic(err)
 		}
 	case <-statusCh:
+
 	}
 
 	out, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{ShowStdout: true})
@@ -50,4 +56,6 @@ func main() {
 	}
 
 	stdcopy.StdCopy(os.Stdout, os.Stderr, out)
+	http.Handle("/", http.FileServer(frontend.BuildHTTPFS()))
+	http.ListenAndServe(":8081", nil)
 }

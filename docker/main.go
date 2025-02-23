@@ -48,15 +48,15 @@ func (d *Docker) RemoveImage(imgID string) error {
 	return nil
 }
 
-func (d *Docker) ListImages() error {
+func (d *Docker) ListImages() ([]image.Summary, error) {
 	list, err := d.cli.ImageList(context.Background(), image.ListOptions{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	for _, image := range list {
 		println(strings.Join(image.RepoTags, " "))
 	}
-	return nil
+	return list, nil
 }
 
 func (d *Docker) ListContainers() error {
